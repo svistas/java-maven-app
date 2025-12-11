@@ -1,16 +1,30 @@
 pipeline {
   
   agent any
+  tools {
+    maven 'maven-3.9'
+  }
+  
   stages {
-    stage('build') {
+    stage('build jar') {
       steps {
-        echo 'Building...'
+        script {
+          echo "Building..."
+          sh 'mvn package'
+        }
       }
     }
-    stage('test') {
+    stage('build docker image') {
   
       steps {
-        echo 'Testing...'
+        script {
+          echo 'Building docker image...'
+          withCredentials([usernamePassword(credentialsId: 'Docker Hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+            sh 'docker build -t sofiavistas/demo-app-jenkins:2.0 .'
+            sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+            sh 'docker push sofiavistas/demo-app-jenkins:2.0'
+          }
+        }
       }
     }
     stage('deploy') {
