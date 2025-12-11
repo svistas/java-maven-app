@@ -21,7 +21,7 @@ pipeline {
   
       steps {
         script {
-          buildDockerImage()
+          buildDockerImage('sofiavistas/demo-app-jenkins', '4.0')
         }
       }
     }
