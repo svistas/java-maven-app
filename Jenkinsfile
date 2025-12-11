@@ -1,3 +1,7 @@
+#!/user/bin/env groovy
+
+@Library('jenkins-shared-library')_
+
 pipeline {
   
   agent any
@@ -9,8 +13,7 @@ pipeline {
     stage('build jar') {
       steps {
         script {
-          echo "Building..."
-          sh 'mvn package'
+          buildJar()
         }
       }
     }
@@ -18,12 +21,7 @@ pipeline {
   
       steps {
         script {
-          echo 'Building docker image...'
-          withCredentials([usernamePassword(credentialsId: 'Docker Hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-            sh 'docker build -t sofiavistas/demo-app-jenkins:2.0 .'
-            sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
-            sh 'docker push sofiavistas/demo-app-jenkins:2.0'
-          }
+          buildDockerImage()
         }
       }
     }
